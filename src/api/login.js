@@ -15,7 +15,9 @@ export function getInfo(token) {
   return request({
     url: '/admin/info',
     method: 'post',
-    data: token
+    data: {
+      token
+    }
   })
 }
 
