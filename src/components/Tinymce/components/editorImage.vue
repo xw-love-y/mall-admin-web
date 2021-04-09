@@ -5,8 +5,8 @@
     </el-button>
     <el-dialog append-to-body :visible.sync="dialogVisible">
       <el-upload class="editor-slide-upload"
-                 action="http://macro-oss.oss-cn-shenzhen.aliyuncs.com"
-                 :data="dataObj"
+                 :action="useOss?ossUploadUrl:minioUploadUrl"
+                 :data="useOss?dataObj:null"
                  :multiple="true"
                  :file-list="fileList"
                  :show-file-list="true"
@@ -45,7 +45,11 @@
           ossaccessKeyId: '',
           dir: '',
           host: ''
-        }
+        },
+        dialogVisible: false,
+        useOss:false, //使用oss->true;使用MinIO->false
+        ossUploadUrl:'http://macro-oss.oss-cn-shenzhen.aliyuncs.com',
+        minioUploadUrl:'http://localhost:8080/file/upload',
       }
     },
     methods: {
@@ -87,6 +91,10 @@
       },
       beforeUpload(file) {
         const _self = this
+        if(!this.useOss){
+                  //不使用oss不需要获取策略
+                  return true;
+        }
         const fileName = file.uid;
         this.listObj[fileName] = {};
         return new Promise((resolve, reject) => {
